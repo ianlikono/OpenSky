@@ -64,7 +64,6 @@ export default function Modal(props) {
   const [fetching, setFetching] = React.useState(false);
 
   function renderFlights(){
-      console.log(flights);
      return flights && flights.length ? (
          <>
             <Table data={flights}/>
@@ -82,6 +81,7 @@ export default function Modal(props) {
   }
 
   async function onFlightsSearch() {
+    setFlights([]);
     const validType = type.length > 0;
     const validTime = parseInt(time) > 0;
     if(validType && validTime) {
