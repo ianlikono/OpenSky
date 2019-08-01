@@ -95,6 +95,7 @@ export default function Modal(props) {
             await setFetching(false);
         }catch(e) {
             console.log(e);
+            setFetching(false);
         }
     } else {
         setSearchValidationError(true)
