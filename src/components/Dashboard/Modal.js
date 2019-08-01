@@ -88,9 +88,10 @@ export default function Modal(props) {
         setFetching(true);
         const beginTime = getTime(parseInt(time));
         const endTime = getTime(0);
+        const url = `https://opensky-network.org/api/flights/${type}?airport=${props.activeIcao}&begin=${beginTime}&end=${endTime}`
         try {
-            const response = await axios.get(`http://localhost:3001/api/flights`, {params: {type: type, icao: props.activeIcao, beginTime: Math.round(beginTime), endTime: Math.round(endTime)}});
-            await setFlights(response.data.data);
+            const response = await axios.get(url);
+            await setFlights(response.data);
             await setFetching(false);
         }catch(e) {
             console.log(e);
