@@ -71,7 +71,7 @@ export default function Modal(props) {
         </>
      ):(
         <Typography component="p">
-          Please select type and input time to search for flights
+          No flights found Please select type and input time to search for flights
         </Typography>
      )
   }
