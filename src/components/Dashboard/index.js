@@ -28,7 +28,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
 const cities = [
   {name: "Atlanta", ICAO: "KATL"},
   {name: "Shanghai", ICAO: "ZSPD"},

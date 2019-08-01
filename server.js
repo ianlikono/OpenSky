@@ -8,13 +8,19 @@ const app = express();
 app.use(json());
 app.use(cors());
 
+//1563921050
+
+// 1564621050
+
 app.get("/api/flights", async (req, res, next) => {
     const {type, icao, beginTime, endTime} = req.query;
+    const url = `https://opensky-network.org/api/flights/${type}?airport=${icao}&begin=${beginTime}&end=${endTime}`
     try {
-     const response = await axios.get(`https://likono:getMeAirports@opensky-network.org/api/flights/${type}?airport=${icao}&begin=${beginTime}&end=${endTime}`);
-     console.log(response.data);
+     const response = await axios.get(url);
+     res.send({data: response.data})
     }catch(e) {
-        console.log(e);
+        res.send({ error: "no results"})
+        console.log('error', e);
     }
 });
 

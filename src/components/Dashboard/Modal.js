@@ -6,6 +6,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,6 +14,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 import React from 'react';
+import Table from './Table';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -47,7 +49,10 @@ const useStyles = makeStyles(theme => ({
   },
   error: {
       color: 'red'
-  }
+  },
+  progress: {
+    margin: theme.spacing(2),
+  },
 }));
 
 export default function Modal(props) {
@@ -55,6 +60,21 @@ export default function Modal(props) {
   const [type, setType] = React.useState("");
   const [time, setTime] = React.useState("")
   const [searchValidationError, setSearchValidationError] = React.useState(false);
+  const [flights, setFlights] = React.useState([]);
+  const [fetching, setFetching] = React.useState(false);
+
+  function renderFlights(){
+      console.log(flights);
+     return flights && flights.length ? (
+         <>
+            <Table data={flights}/>
+        </>
+     ):(
+        <Typography component="p">
+          Please select type and input time to search for flights
+        </Typography>
+     )
+  }
 
   function handleTypeChange(event) {
     setSearchValidationError(false)
@@ -65,11 +85,13 @@ export default function Modal(props) {
     const validType = type.length > 0;
     const validTime = parseInt(time) > 0;
     if(validType && validTime) {
-        const endTime = new Date().getTime() / 1000;
-        const beginTime = endTime - parseInt(time);
+        setFetching(true);
+        const beginTime = getTime(parseInt(time));
+        const endTime = getTime(0);
         try {
             const response = await axios.get(`http://localhost:3001/api/flights`, {params: {type: type, icao: props.activeIcao, beginTime: Math.round(beginTime), endTime: Math.round(endTime)}});
-            console.log(response);
+            await setFlights(response.data.data);
+            await setFetching(false);
         }catch(e) {
             console.log(e);
         }
@@ -106,7 +128,7 @@ export default function Modal(props) {
                     }}
                 >
                     <MenuItem value="arrival">arrival</MenuItem>
-                    <MenuItem value="depature">depature</MenuItem>
+                    <MenuItem value="departure">departure</MenuItem>
                 </Select>
                 </FormControl>
                 <FormControl className={classes.formControl}>
@@ -124,6 +146,14 @@ export default function Modal(props) {
                 </FormControl>
             </div>
           </form>
+          <div>
+              {fetching ? (
+                  <div>
+                    <p>Loading...</p>
+                    <LinearProgress color="secondary" />
+                </div>
+              ): renderFlights()}
+          </div>
         </DialogContent>
         <DialogActions>
             <div className={classes.footer}>
@@ -138,4 +168,10 @@ export default function Modal(props) {
       </Dialog>
     </React.Fragment>
   );
+}
+
+function getTime(minutes){
+    const time = new Date();
+    time.setMinutes(time.getMinutes() - minutes);
+    return Math.round(time.getTime()/1000);
 }
